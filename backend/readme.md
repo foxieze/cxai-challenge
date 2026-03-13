@@ -38,7 +38,7 @@ backend/
 │   ├── scanner.py         # Module 2: Scraping & Comparison
 │   ├── validator.py       # Module 3: Explainable Validation
 │   └── drafter.py         # Module 4: Drafting / Diff Logic
-├── core/
+├── core/ ✅Completed 
 │   ├── __init__.py
 │   ├── audit_logger.py    # Module 5: Audit Trail
 │   └── llm_client.py      # LLM abstraction (OpenAI/Gemini)
