@@ -13,8 +13,7 @@ from models.audit import AuditEntry
 from config import settings
 
 
-class AuditLogger:
-    """Thread-safe, append-only audit logger writing to JSONL."""
+class AuditLogger: #Thread-safe, append-only audit logger writing to JSONL.
 
     def __init__(self, log_path: str | None = None) -> None:
         self._path = Path(log_path or settings.audit_log_path)
@@ -29,8 +28,7 @@ class AuditLogger:
         input_summary: str = "",
         output_summary: str = "",
         metadata: dict | None = None,
-    ) -> AuditEntry:
-        """Create and persist an audit entry."""
+    ) -> AuditEntry: #Create and persist an audit entry.
         entry = AuditEntry(
             actor=actor,
             action=action,
@@ -49,13 +47,12 @@ class AuditLogger:
 
     async def get_entries(
         self, limit: int = 100, action_filter: str | None = None
-    ) -> list[AuditEntry]:
-        """Retrieve recent audit entries, optionally filtered by action."""
+    ) -> list[AuditEntry]: #Retrieve recent audit entries, optionally filtered by action.
         entries = self._entries
         if action_filter:
             entries = [e for e in entries if e.action == action_filter]
         return entries[-limit:]
 
 
-# Singleton instance
+#Singleton instance
 audit_logger = AuditLogger()
