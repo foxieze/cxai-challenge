@@ -4,19 +4,15 @@ Provides a single `complete()` interface for all downstream modules.
 """
 
 from __future__ import annotations
-
 import json
 import logging
-
 from openai import AsyncOpenAI
-
 from config import settings
 
 logger = logging.getLogger(__name__)
 
 
-class LLMClient:
-    """Unified async LLM client."""
+class LLMClient: #Unified async LLM client.
 
     def __init__(self) -> None:
         self._provider = settings.llm_provider
@@ -40,8 +36,7 @@ class LLMClient:
         user_prompt: str,
         temperature: float = 0.2,
         max_tokens: int = 4096,
-    ) -> str:
-        """Send a prompt and return the raw text response."""
+    ) -> str: #Send a prompt and return the raw text response.
         response = await self._openai.chat.completions.create(
             model=self._model,
             messages=[
@@ -58,8 +53,7 @@ class LLMClient:
         system_prompt: str,
         user_prompt: str,
         temperature: float = 0.1,
-    ) -> dict:
-        """Send a prompt and parse the response as JSON."""
+    ) -> dict: #Send a prompt and parse the response as JSON.
         raw = await self.complete(system_prompt, user_prompt, temperature)
 
         # Strip markdown code fences if the model wraps output
@@ -76,5 +70,5 @@ class LLMClient:
             raise
 
 
-# Singleton
+#Singleton
 llm_client = LLMClient()
