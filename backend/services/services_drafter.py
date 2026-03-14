@@ -5,9 +5,7 @@ issue so a human reviewer can approve before deployment.
 """
 
 from __future__ import annotations
-
 import re
-
 from models.schemas import (
     FixRecommendation,
     ManagedSite,
@@ -77,8 +75,7 @@ def _create_diff_for_fix(
 ) -> ProposedDiff | None:
     """Create a single diff based on the fix type."""
 
-    # ── Prohibited Term Replacement ──────────────────────────────────────
-    if "Prohibited term" in fix.reason:
+    if "Prohibited term" in fix.reason: #Prohibited Term Replacement
         for pt in regulation.prohibited_terms:
             if pt.term.lower() in fix.matched_text.lower():
                 replacement = pt.replacement or "[REMOVED]"
@@ -105,8 +102,7 @@ def _create_diff_for_fix(
                     ),
                 )
 
-    # ── Missing Disclaimer Insertion ─────────────────────────────────────
-    if "Missing required disclaimer" in fix.reason:
+    if "Missing required disclaimer" in fix.reason:  #Missing Disclaimer Insertion
         for disc in regulation.required_disclaimers:
             disclaimer_html = (
                 f'<div class="regulatory-disclaimer" '
@@ -137,8 +133,8 @@ def _create_diff_for_fix(
                 ),
             )
 
-    # ── Dosage Claim ─────────────────────────────────────────────────────
-    if "Dosage claim" in fix.reason:
+
+    if "Dosage claim" in fix.reason: #Dosage Claim
         before_snippet = _extract_snippet(site.html_content, fix.matched_text)
         return ProposedDiff(
             issue_id=fix.issue_id,
