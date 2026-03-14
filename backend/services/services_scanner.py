@@ -5,11 +5,8 @@ to find prohibited terms, missing disclaimers, and dosage violations.
 """
 
 from __future__ import annotations
-
 import re
-
 from bs4 import BeautifulSoup
-
 from models.schemas import (
     ManagedSite,
     RegulatorySchema,
@@ -25,8 +22,7 @@ def _extract_visible_text(html: str) -> list[tuple[str, str]]:
     """
     soup = BeautifulSoup(html, "html.parser")
 
-    # Remove non-visible elements
-    for tag in soup(["script", "style", "meta", "link"]):
+    for tag in soup(["script", "style", "meta", "link"]): #To remove non-visible elements
         tag.decompose()
 
     results: list[tuple[str, str]] = []
@@ -69,7 +65,7 @@ async def scan_site(
     text_nodes = _extract_visible_text(site.html_content)
     full_text = " ".join(text for _, text in text_nodes)
 
-    # ── Check 1: Prohibited Terms ────────────────────────────────────────
+    #Check1: Prohibited Terms
     for prohibited in regulation.prohibited_terms:
         pattern = re.compile(
             rf"\b{re.escape(prohibited.term)}\b", re.IGNORECASE
@@ -92,17 +88,17 @@ async def scan_site(
                     )
                 )
 
-    # ── Check 2: Missing Disclaimers ─────────────────────────────────────
+    #Check2: Missing Disclaimers
     for disclaimer in regulation.required_disclaimers:
-        # Check if any affected drug is mentioned on the page
+        #To check if any affected drug is mentioned on the page
         drugs_on_page = [
             drug
             for drug in disclaimer.applies_to
             if re.search(rf"\b{re.escape(drug)}\b", full_text, re.IGNORECASE)
         ]
         if drugs_on_page:
-            # Check if disclaimer text is present
-            if disclaimer.text.lower() not in full_text.lower():
+            
+            if disclaimer.text.lower() not in full_text.lower(): #To check if disclaimer text is present
                 matches.append(
                     ScanMatch(
                         site_id=site.site_id,
@@ -120,7 +116,7 @@ async def scan_site(
                     )
                 )
 
-    # ── Check 3: Dosage Claims ───────────────────────────────────────────
+    #Check3: Dosage Claims
     if regulation.max_dosage_claims:
         dosage_pattern = re.compile(
             r"\b(\d+)\s*(mg|mcg|ml|g)\b", re.IGNORECASE
@@ -143,7 +139,7 @@ async def scan_site(
                     )
                 )
 
-    # ── Audit ────────────────────────────────────────────────────────────
+    # Audit
     await audit_logger.log(
         actor="scanner",
         action="scan_site",
