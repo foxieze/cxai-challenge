@@ -5,9 +5,7 @@ Each violation gets: WHY it's wrong, WHAT to fix, HOW confident we are.
 """
 
 from __future__ import annotations
-
 import re
-
 from models.schemas import (
     ComplianceStatus,
     FixRecommendation,
@@ -44,12 +42,11 @@ def _compute_confidence(match: ScanMatch, regulation: RegulatorySchema) -> float
     elif "Dosage claim" in match.rule_violated:
         score += 0.25
 
-    # Context richness bonus
-    if len(match.surrounding_context) > 30:
+    
+    if len(match.surrounding_context) > 30: #For context richness bonus
         score += 0.10
 
-    # Regulatory severity multiplier
-    severity_multiplier = {
+    severity_multiplier = { #Regulatory severity multiplier
         Severity.CRITICAL: 1.0,
         Severity.HIGH: 0.95,
         Severity.MEDIUM: 0.85,
@@ -129,7 +126,7 @@ async def validate_matches(
         fix_text = _generate_fix(match, regulation)
         severity = _determine_severity(match, regulation)
 
-        # Determine compliance status based on confidence
+        #To determine compliance status based on confidence
         if confidence >= 0.6:
             status = ComplianceStatus.NON_COMPLIANT
         elif confidence >= 0.3:
