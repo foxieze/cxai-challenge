@@ -21,9 +21,7 @@ from core.audit_logger import audit_logger
 router = APIRouter(prefix="/api/v1", tags=["compliance"])
 
 
-# ─── Request Models ──────────────────────────────────────────────────────────
-
-class RunComplianceRequest(BaseModel):
+class RunComplianceRequest(BaseModel): #To Request Models
     """Request body for a full compliance pipeline run."""
     regulatory_update: str = Field(
         ...,
@@ -37,12 +35,10 @@ class RunComplianceRequest(BaseModel):
     )
 
 
-class AuditQueryParams(BaseModel):
+class AuditQueryParams(BaseModel): #The Endpoints
     limit: int = Field(default=50, ge=1, le=500)
     action_filter: str | None = None
 
-
-# ─── Endpoints ───────────────────────────────────────────────────────────────
 
 @router.post(
     "/compliance/run",
@@ -63,19 +59,19 @@ async def run_compliance_pipeline(request: RunComplianceRequest) -> ComplianceRe
       5. Return the complete report
     """
     try:
-        # Step 1: Interpret
+        #Step1: Interpret
         regulation = await interpret_regulation(request.regulatory_update)
 
-        # Step 2: Scan
+        #Step2: Scan
         matches = await scan_all_sites(request.sites, regulation)
 
-        # Step 3: Validate
+        #Step3: Validate
         fixes = await validate_matches(matches, regulation)
 
-        # Step 4: Draft diffs
+        #Step4: Draft diffs
         diffs = await generate_diffs(fixes, request.sites, regulation)
 
-        # Step 5: Build report
+        #Step5: Build report
         report = ComplianceReport(
             regulation=regulation,
             total_sites_scanned=len(request.sites),
