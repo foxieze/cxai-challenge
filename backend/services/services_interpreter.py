@@ -52,16 +52,16 @@ async def interpret_regulation(update_text: str) -> RegulatorySchema:
     Returns:
         A validated RegulatorySchema instance.
     """
-    # Step 1: Call LLM
+    #Step1: Call LLM
     data = await llm_client.complete_json(
         system_prompt=SYSTEM_PROMPT,
         user_prompt=f"Regulatory Update:\n\n{update_text}",
     )
 
-    # Step 2: Validate through Pydantic
+    #Step2: Validate through Pydantic
     schema = RegulatorySchema(**data)
 
-    # Step 3: Audit
+    #Step3: Audit
     await audit_logger.log(
         actor="interpreter",
         action="interpret_regulation",
